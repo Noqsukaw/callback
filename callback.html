@@ -101,35 +101,18 @@
           return;
         }
         
-        // Envoyer le code à l'extension via postMessage
-        // L'extension écoute ce message
-        if (window.opener) {
-          window.opener.postMessage({
-            type: 'X_OAUTH_CALLBACK',
-            code: code,
-            state: state
-          }, '*');
-          
-          statusEl.className = 'success';
-          statusEl.textContent = '✅ Autorisation réussie ! Cette fenêtre va se fermer...';
-          
-          // Fermer la fenêtre après 2 secondes
-          setTimeout(() => {
-            window.close();
-          }, 2000);
-        } else {
-          // Si pas de window.opener, stocker dans localStorage pour que l'extension puisse le récupérer
-          localStorage.setItem('x_oauth_code', code);
-          localStorage.setItem('x_oauth_state', state);
-          
-          statusEl.className = 'success';
-          statusEl.textContent = '✅ Autorisation réussie ! Retournez à l\'extension...';
-          
-          // Essayer de fermer après 3 secondes
-          setTimeout(() => {
-            window.close();
-          }, 3000);
-        }
+        // Stocker dans localStorage pour que l'extension puisse le récupérer
+        localStorage.setItem('x_oauth_code', code);
+        localStorage.setItem('x_oauth_state', state);
+        localStorage.setItem('x_oauth_timestamp', Date.now().toString());
+        
+        statusEl.className = 'success';
+        statusEl.textContent = '✅ Autorisation réussie ! Cette fenêtre va se fermer...';
+        
+        // Essayer de fermer la fenêtre
+        setTimeout(() => {
+          window.close();
+        }, 2000);
         
       } catch (err) {
         statusEl.className = 'error';
